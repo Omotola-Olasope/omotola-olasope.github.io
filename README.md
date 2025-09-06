@@ -1,6 +1,7 @@
 # Welcome to Omotola's Responsive Portfolio Website v.2.0
 
-I am a Data Engineer passionately committed to my mission of radiating success, inspiring others, and making a positive impact by dedicating myself to personal excellence and serving my community. Leveraging my key strengths in adaptability, problem-solving, and empathy, I continuously strive to uplift and empower those around me.
+I am an Equities Specialist at Bloomberg and Data Engineer, passionately committed to my mission of radiating success, inspiring others, and making a positive impact by dedicating myself to personal excellence and serving my community.
+Leveraging my key strengths in adaptability, problem-solving, and empathy, I continuously strive to uplift and empower those around me.
 
 This is my Personal Portfolio website showcasing a diverse collection of projects spanning Data Engineering, Data Analysis, and Web Development. Its characteristics include:
 
