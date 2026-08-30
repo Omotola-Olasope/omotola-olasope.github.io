@@ -76,6 +76,20 @@
       </script>
    </head>
    <body>
+      <!-- Apply the theme before the page paints so dark mode never flashes light.
+           main.js re-runs this logic and also syncs the toggle icon. -->
+      <script>
+         (function () {
+            try {
+               if (localStorage.getItem('selected-theme') !== 'light') {
+                  document.body.classList.add('dark-theme')
+               }
+            } catch (e) {
+               document.body.classList.add('dark-theme')
+            }
+         })()
+      </script>
+
       <!--==================== HEADER ====================-->
       <header class="header" id="header">
          <nav class="nav container">
@@ -172,6 +186,25 @@
                      I turn market complexity into clarity for investors and business leaders.
                   </p>
 
+                  <ul class="home__chips">
+                     <li>TCA</li>
+                     <li>Commodities</li>
+                     <li>The Terminal</li>
+                     <li>Python</li>
+                     <li>AWS</li>
+                     <li>Bloomberg BQuant</li>
+                  </ul>
+
+                  <div class="home__actions">
+                     <a href="#projects" class="button">
+                        <i class="ri-function-line"></i> View Work
+                     </a>
+
+                     <a href="#contact" class="button__ghost button__ghost--wide">
+                        <i class="ri-send-plane-line"></i> Get In Touch
+                     </a>
+                  </div>
+
                   <a href="#about" class="home__scroll">
                      <div class="home__scroll-box">
                         <i class="ri-arrow-down-s-line"></i>
@@ -189,7 +222,12 @@
                <span>Projects</span>
             </h2>
 
-            <div class="projects__container container grid">
+            <div class="projects__carousel container">
+               <button class="projects__nav projects__nav--prev" id="projects-prev" type="button" aria-label="Previous projects" aria-controls="projects-track">
+                  <i class="ri-arrow-left-s-line"></i>
+               </button>
+
+               <div class="projects__track" id="projects-track" tabindex="0" role="group" aria-label="Projects, use the arrow keys to browse">
 
                <article class="projects__card">
                   <div class="projects__image">
@@ -387,13 +425,6 @@
                      </a>
                   </div>
                </article>
-            </div>
-
-            <h2 class="section__title-2">
-               <span>More Work.</span>
-            </h2>
-
-            <div class="projects__container projects__container--compact container grid">
 
                <article class="projects__card">
                   <div class="projects__image">
@@ -684,6 +715,13 @@
                      </a>
                   </div>
                </article>
+               </div>
+
+               <button class="projects__nav projects__nav--next" id="projects-next" type="button" aria-label="Next projects" aria-controls="projects-track">
+                  <i class="ri-arrow-right-s-line"></i>
+               </button>
+
+               <div class="projects__dots" id="projects-dots" role="tablist" aria-label="Project pages"></div>
             </div>
          </section>
 
@@ -753,16 +791,15 @@
                   <div class="services__content">
                      <div class="services__icon">
                         <div class="services__box"></div>
-                        <i class="ri-settings-3-line"></i>
+                        <i class="ri-bar-chart-box-line"></i>
                      </div>
 
-                     <h3 class="services__title">Data Engineering</h3>
+                     <h3 class="services__title">Commodities Research &amp; Analytics</h3>
 
                      <p class="services__description">
-                        Plan, design, and monitor robust and scalable data 
-                        architectures/solutions to facilitate 
-                        efficient storage, processing, 
-                        and movement of data.
+                        The full commodities complex, across energy, metals, agriculture and freight.
+                        Positioning and flow analysis, curve and spread work, arbitrage and netback
+                        modelling, and the whole Bloomberg commodities workflow end to end.
                      </p>
                   </div>
                </article>
@@ -773,15 +810,15 @@
                   <div class="services__content">
                      <div class="services__icon">
                         <div class="services__box"></div>
-                        <i class="ri-database-2-line"></i>
+                        <i class="ri-exchange-dollar-line"></i>
                      </div>
 
-                     <h3 class="services__title">Database Management</h3>
+                     <h3 class="services__title">Trading &amp; Execution Analytics</h3>
 
                      <p class="services__description">
-                        Administer and optimize databases, 
-                        ensuring they are well-tuned for performance, 
-                        reliability, and security.
+                        Transaction cost analysis for trading desks. Execution quality benchmarking,
+                        cost and slippage attribution, venue and broker performance, and the
+                        measurement framework that tells a desk where its money is actually going.
                      </p>
                   </div>
                </article>
@@ -792,16 +829,15 @@
                   <div class="services__content">
                      <div class="services__icon">
                         <div class="services__box"></div>
-                        <i class="ri-bar-chart-2-line"></i>
+                        <i class="ri-stack-line"></i>
                      </div>
 
-                     <h3 class="services__title">Data Modeling</h3>
+                     <h3 class="services__title">Data Engineering &amp; Pipelines</h3>
 
                      <p class="services__description">
-                        Design and implement data models 
-                        to organize and structure data, 
-                        ensuring compatibility with 
-                        analytical and reporting needs.
+                        The engineering behind the analytics. Ingestion from messy real world sources,
+                        orchestration with Airflow, Docker and AWS, schema and warehouse design, and
+                        the data quality controls that make a model worth trusting.
                      </p>
                   </div>
                </article>
