@@ -243,3 +243,129 @@ if (projectsTrack) {
     buildDots()
     updateControls()
 }
+
+/*=============== PROJECT DETAIL MODAL ===============*/
+const projectModal = document.getElementById('project-modal')
+
+if (projectModal) {
+    const modalBody = document.getElementById('project-modal-body')
+    const modalClose = document.getElementById('project-modal-close')
+    const cards = Array.from(document.querySelectorAll('.projects__card'))
+    const supportsDialog = typeof projectModal.showModal === 'function'
+
+    if (!supportsDialog) {
+        // Without <dialog> support the trigger would be a dead control, so remove it
+        document.querySelectorAll('.projects__more').forEach(button => button.remove())
+    } else {
+        const openProject = (card) => {
+            const cardImage = card.querySelector('.projects__img')
+            const cardContent = card.querySelector('.projects__content')
+            const cardLink = card.querySelector('.projects__buttons .projects__link')
+
+            modalBody.innerHTML = ''
+
+            if (cardImage) {
+                const media = document.createElement('div')
+                media.className = 'project-modal__media'
+                const image = document.createElement('img')
+                image.src = cardImage.getAttribute('src')
+                image.alt = cardImage.getAttribute('alt') || ''
+                media.appendChild(image)
+                modalBody.appendChild(media)
+            }
+
+            // Cloned from the card so the copy lives in exactly one place.
+            // The truncation is scoped to .projects__track, so nothing is cut off here.
+            const details = document.createElement('div')
+            details.className = 'project-modal__content'
+            details.innerHTML = cardContent.innerHTML
+
+            const heading = details.querySelector('.projects__title')
+            if (heading) {
+                heading.id = 'project-modal-title'
+            }
+
+            if (cardLink) {
+                const actions = document.createElement('div')
+                actions.className = 'project-modal__actions'
+                const cta = cardLink.cloneNode(true)
+                cta.classList.remove('projects__link')
+                cta.classList.add('button')
+                actions.appendChild(cta)
+                details.appendChild(actions)
+            }
+
+            modalBody.appendChild(details)
+            modalBody.scrollTop = 0
+            document.body.classList.add('modal-open')
+            projectModal.showModal()
+        }
+
+        cards.forEach((card) => {
+            const trigger = card.querySelector('.projects__more')
+            if (trigger) {
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation()
+                    openProject(card)
+                })
+            }
+
+            // The card is clickable too, but a swipe across the carousel must not
+            // count as a click, so compare the pointer travel first.
+            let pointerX = 0
+            let pointerY = 0
+
+            card.addEventListener('pointerdown', (e) => {
+                pointerX = e.clientX
+                pointerY = e.clientY
+            })
+
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('a') || e.target.closest('.projects__more')) return
+                const travelled = Math.abs(e.clientX - pointerX) + Math.abs(e.clientY - pointerY)
+                if (travelled > 10) return
+                openProject(card)
+            })
+        })
+
+        // Unlocking the page must not depend on the 'close' event alone. Every
+        // explicit dismissal goes through here, and the listeners below are a
+        // safety net for the browser driven Escape key.
+        const closeProject = () => {
+            document.body.classList.remove('modal-open')
+            if (projectModal.open) {
+                projectModal.close()
+            }
+        }
+
+        modalClose.addEventListener('click', closeProject)
+
+        projectModal.addEventListener('click', (e) => {
+            // Following an in-page link should dismiss the modal first
+            if (e.target.closest('a[href^="#"]')) {
+                closeProject()
+                return
+            }
+            // A click landing on the dialog itself is a click on the backdrop
+            if (e.target === projectModal) {
+                closeProject()
+            }
+        })
+
+        // Escape is handled by the browser, so mirror the cleanup on every
+        // signal it gives us rather than trusting a single one to arrive.
+        projectModal.addEventListener('cancel', () => {
+            document.body.classList.remove('modal-open')
+        })
+
+        projectModal.addEventListener('close', () => {
+            document.body.classList.remove('modal-open')
+        })
+
+        projectModal.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.body.classList.remove('modal-open')
+            }
+        })
+    }
+}

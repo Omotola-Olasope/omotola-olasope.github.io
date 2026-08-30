@@ -988,6 +988,143 @@ body.dark-theme{
   background-color: var(--first-color);
 }
 
+/* "Read more" trigger */
+.projects__more{
+  display: flex;
+  align-items: center;
+  column-gap: .25rem;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--body-font);
+  font-size: var(--small-font-size);
+  font-weight: var(--font-medium);
+  color: var(--first-color);
+  transition: color .3s;
+}
+
+.projects__more i{
+  font-size: 1rem;
+}
+
+.projects__more:hover{
+  color: var(--title-color);
+}
+
+.projects__track .projects__card{
+  cursor: pointer;
+}
+
+/*=============== PROJECT DETAIL MODAL ===============*/
+/* Native <dialog>: the browser handles the top layer, focus trapping,
+   Escape to dismiss, and returning focus to the trigger on close. */
+.project-modal{
+  /* Overriding the UA max-width also loses its centring, so set both insets
+     and let auto margins recentre the dialog explicitly. */
+  inset: 0;
+  margin: auto;
+  width: min(880px, calc(100% - 2rem));
+  max-width: none;
+  height: max-content;
+  max-height: calc(100% - 2rem);
+  padding: 0;
+  border: 4px solid var(--black-color);
+  background-color: var(--body-color);
+  color: var(--text-color);
+  overflow: visible;
+}
+
+.project-modal::backdrop{
+  background-color: hsla(0, 0%, 0%, .72);
+  backdrop-filter: blur(4px);
+}
+
+.project-modal__body{
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.project-modal__close{
+  position: absolute;
+  top: .75rem;
+  right: .75rem;
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: var(--white-color);
+  background-color: var(--first-color);
+  transition: transform .3s;
+}
+
+.project-modal__close:hover{
+  transform: scale(1.1);
+}
+
+/* Show the whole screenshot here, not the 16:10 crop the cards use */
+.project-modal__media img{
+  width: 100%;
+  aspect-ratio: auto;
+  object-fit: contain;
+  max-height: 45vh;
+  background-color: var(--container-color);
+}
+
+.project-modal__content{
+  padding: 1.5rem 1.25rem 2rem;
+}
+
+.project-modal__content .projects__title{
+  font-size: var(--h2-font-size);
+  margin-bottom: 1rem;
+}
+
+/* The card clamps are scoped to .projects__track, so nothing is truncated here */
+.project-modal__content .projects__description{
+  line-height: 1.6;
+}
+
+.project-modal__actions{
+  margin-top: 1.75rem;
+}
+
+.project-modal__actions .button{
+  width: max-content;
+}
+
+@media (prefers-reduced-motion: no-preference){
+  .project-modal[open]{
+    animation: project-modal-in .28s ease-out;
+  }
+  .project-modal[open]::backdrop{
+    animation: project-modal-backdrop-in .28s ease-out;
+  }
+}
+
+@keyframes project-modal-in{
+  from{
+    opacity: 0;
+    transform: translateY(14px) scale(.985);
+  }
+}
+
+@keyframes project-modal-backdrop-in{
+  from{
+    opacity: 0;
+  }
+}
+
+/* Stop the page behind the modal from scrolling */
+body.modal-open{
+  overflow: hidden;
+}
+
 /*=============== CONTACT ===============*/
 .contact{
   padding-bottom: 0;
@@ -1614,6 +1751,10 @@ body.dark-theme{
   }
   .projects__nav--prev{ left: -1.5rem; }
   .projects__nav--next{ right: -1.5rem; }
+
+  .project-modal__content{
+    padding: 2.5rem 2.5rem 3rem;
+  }
   .projects__image{
     margin-bottom: 1rem;
   }
