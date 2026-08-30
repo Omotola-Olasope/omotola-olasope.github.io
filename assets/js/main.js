@@ -113,6 +113,11 @@ if (selectedTheme) {
   // If the validation is fulfilled, we ask what the issue was to know if we activated or deactivated the dark
     document.body.classList[selectedTheme === 'dark' ? 'add' : 'remove'](darkTheme)
     themeButton.classList[selectedIcon === 'ri-moon-line' ? 'add' : 'remove'](iconTheme)
+} else {
+    // Dark is the default. Only an explicit stored choice of 'light' opts out,
+    // which is handled by the branch above.
+    document.body.classList.add(darkTheme)
+    themeButton.classList.add(iconTheme)
 }
 
 // Activate / deactivate the theme manually with the button
@@ -126,16 +131,115 @@ themeButton.addEventListener('click', () => {
 })
 
 /*=============== SCROLL REVEAL ANIMATION ===============*/
-const sr = ScrollReveal({
-    origin: 'top',
-    distance: '60px',
-    duration: 2500,
-    delay: 400,
-    reset: true // Animations repeat
-})
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-sr.reveal(`.home__perfil, .about__image, .contact__mail`, {origin: 'right'})
-sr.reveal(`.home__name, .home__info, 
-            .about__container .section__title-1, .about__info,
-            contact__social, .contact__data`, {origin: 'left'})
-sr.reveal(`.services__card, .projects__card`, {interval: 100})
+if (!prefersReducedMotion) {
+    const sr = ScrollReveal({
+        origin: 'top',
+        distance: '60px',
+        duration: 2500,
+        delay: 400,
+        reset: false // Reveal once, do not replay on every scroll
+    })
+
+    sr.reveal(`.home__perfil, .about__image, .contact__mail`, {origin: 'right'})
+    sr.reveal(`.home__name, .home__info,
+                .about__container .section__title-1, .about__info,
+                .contact__social, .contact__data`, {origin: 'left'})
+    sr.reveal(`.services__card`, {interval: 100})
+    sr.reveal(`.projects__carousel`)
+}
+
+/*=============== PROJECTS CAROUSEL ===============*/
+const projectsTrack = document.getElementById('projects-track')
+
+if (projectsTrack) {
+    const prevButton = document.getElementById('projects-prev')
+    const nextButton = document.getElementById('projects-next')
+    const dotsContainer = document.getElementById('projects-dots')
+    const cards = Array.from(projectsTrack.querySelectorAll('.projects__card'))
+
+    // How many whole cards fit in the visible track at the current breakpoint
+    const cardsPerView = () => {
+        const cardWidth = cards[0].getBoundingClientRect().width
+        if (!cardWidth) return 1
+        const gap = parseFloat(getComputedStyle(projectsTrack).columnGap) || 0
+        return Math.max(1, Math.round((projectsTrack.clientWidth + gap) / (cardWidth + gap)))
+    }
+
+    const pageCount = () => Math.max(1, Math.ceil(cards.length / cardsPerView()))
+
+    // Tracked explicitly rather than derived from scrollLeft on demand, so the
+    // controls stay correct even if scroll events are coalesced or delayed.
+    let activePage = 0
+
+    const updateControls = () => {
+        prevButton.disabled = activePage <= 0
+        nextButton.disabled = activePage >= pageCount() - 1
+        Array.from(dotsContainer.children).forEach((dot, i) => {
+            dot.setAttribute('aria-selected', String(i === activePage))
+        })
+    }
+
+    const setActivePage = (index) => {
+        activePage = Math.min(Math.max(index, 0), pageCount() - 1)
+        updateControls()
+    }
+
+    const goToPage = (index) => {
+        const target = Math.min(Math.max(index, 0), pageCount() - 1)
+        projectsTrack.scrollTo({
+            left: target * projectsTrack.clientWidth,
+            behavior: prefersReducedMotion ? 'auto' : 'smooth'
+        })
+        // Update immediately rather than waiting for the scroll to settle
+        setActivePage(target)
+    }
+
+    const buildDots = () => {
+        dotsContainer.innerHTML = ''
+        for (let i = 0; i < pageCount(); i++) {
+            const dot = document.createElement('button')
+            dot.type = 'button'
+            dot.setAttribute('role', 'tab')
+            dot.setAttribute('aria-label', `Go to project page ${i + 1}`)
+            dot.addEventListener('click', () => goToPage(i))
+            dotsContainer.appendChild(dot)
+        }
+    }
+
+    prevButton.addEventListener('click', () => goToPage(activePage - 1))
+    nextButton.addEventListener('click', () => goToPage(activePage + 1))
+
+    // Arrow keys browse the track once it has focus
+    projectsTrack.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+            e.preventDefault()
+            goToPage(activePage + 1)
+        } else if (e.key === 'ArrowLeft') {
+            e.preventDefault()
+            goToPage(activePage - 1)
+        }
+    })
+
+    // Keeps state honest when the visitor swipes or trackpad scrolls the track directly
+    let scrollTimer
+    projectsTrack.addEventListener('scroll', () => {
+        clearTimeout(scrollTimer)
+        scrollTimer = setTimeout(() => {
+            setActivePage(Math.round(projectsTrack.scrollLeft / (projectsTrack.clientWidth || 1)))
+        }, 80)
+    })
+
+    let resizeTimer
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer)
+        resizeTimer = setTimeout(() => {
+            buildDots()
+            setActivePage(Math.round(projectsTrack.scrollLeft / (projectsTrack.clientWidth || 1)))
+        }, 150)
+    })
+
+    buildDots()
+    updateControls()
+}
