@@ -1,5 +1,6 @@
 /*=============== GOOGLE FONTS ===============*/
-@import url("https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap");
+/* Loaded via <link rel="preconnect"> + <link rel="stylesheet"> in index.html <head>.
+   An @import here would serialise the font fetch behind this stylesheet. */
 
 /*=============== VARIABLES CSS ===============*/
 :root {
@@ -819,6 +820,41 @@ body.dark-theme{
   background-color: var(--white-color);
 }
 
+/* Tech stack pills */
+.projects__tags{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: 1rem;
+}
+
+.projects__tags li{
+  font-size: var(--smaller-font-size);
+  font-weight: var(--font-medium);
+  color: var(--title-color);
+  background-color: var(--body-color);
+  border: 1px solid var(--black-color-light);
+  padding: .2rem .6rem;
+  transition: background-color .4s, border-color .4s, color .4s;
+}
+
+.projects__card:hover .projects__tags li{
+  border-color: var(--first-color);
+}
+
+/* "More Work" tier: same card, visually demoted */
+.projects__container--compact .projects__description{
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.projects__container--compact .projects__title{
+  font-size: var(--normal-font-size);
+}
+
 /*=============== CONTACT ===============*/
 .contact{
   padding-bottom: 0;
@@ -1429,6 +1465,9 @@ body.dark-theme{
   .projects__container{
     grid-template-columns: repeat(3, 352px);
     padding-block: 3rem 1rem;
+  }
+  .projects__container--compact{
+    padding-block: 1rem 1rem;
   }
   .projects__card{
     padding: 1.25rem 1.25rem 2.5rem;

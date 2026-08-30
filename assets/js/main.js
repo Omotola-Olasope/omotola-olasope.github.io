@@ -113,6 +113,10 @@ if (selectedTheme) {
   // If the validation is fulfilled, we ask what the issue was to know if we activated or deactivated the dark
     document.body.classList[selectedTheme === 'dark' ? 'add' : 'remove'](darkTheme)
     themeButton.classList[selectedIcon === 'ri-moon-line' ? 'add' : 'remove'](iconTheme)
+} else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    // No stored choice yet, so follow the operating system preference on the first visit
+    document.body.classList.add(darkTheme)
+    themeButton.classList.add(iconTheme)
 }
 
 // Activate / deactivate the theme manually with the button
@@ -126,16 +130,20 @@ themeButton.addEventListener('click', () => {
 })
 
 /*=============== SCROLL REVEAL ANIMATION ===============*/
-const sr = ScrollReveal({
-    origin: 'top',
-    distance: '60px',
-    duration: 2500,
-    delay: 400,
-    reset: true // Animations repeat
-})
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-sr.reveal(`.home__perfil, .about__image, .contact__mail`, {origin: 'right'})
-sr.reveal(`.home__name, .home__info, 
-            .about__container .section__title-1, .about__info,
-            contact__social, .contact__data`, {origin: 'left'})
-sr.reveal(`.services__card, .projects__card`, {interval: 100})
+if (!prefersReducedMotion) {
+    const sr = ScrollReveal({
+        origin: 'top',
+        distance: '60px',
+        duration: 2500,
+        delay: 400,
+        reset: false // Reveal once, do not replay on every scroll
+    })
+
+    sr.reveal(`.home__perfil, .about__image, .contact__mail`, {origin: 'right'})
+    sr.reveal(`.home__name, .home__info,
+                .about__container .section__title-1, .about__info,
+                .contact__social, .contact__data`, {origin: 'left'})
+    sr.reveal(`.services__card, .projects__card`, {interval: 100})
+}
